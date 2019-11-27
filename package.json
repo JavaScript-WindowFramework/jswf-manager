@@ -1,0 +1,26 @@
+{
+  "name": "@jswf/manager",
+  "version": "1.0.0",
+  "description": "jswf window manager",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -b src",
+    "watch": "tsc -b -w src",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "SoraKumo",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^3.7.2"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JavaScript-WindowFramework/jswf-manager.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JavaScript-WindowFramework/jswf-manager/issues"
+  },
+  "homepage": "https://github.com/JavaScript-WindowFramework/jswf-manager#readme"
+}
