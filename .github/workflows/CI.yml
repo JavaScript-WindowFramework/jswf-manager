@@ -29,6 +29,6 @@ jobs:
         if: contains(github.ref, 'refs/tags')
         run: |
           a=($(echo $GITHUB_REF | sed -n -r 's/^refs\/tags\/(.*?)-(.*?).*$/\1 \2/p')) tag=${a[0]} version=${a[1]}
-          echo public [$tag] [$version]
+          echo publish $version [$tag]
           npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
           npm publish --tag $tag
