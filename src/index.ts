@@ -1,3 +1,5 @@
+//SSR対策
+declare var window: Window;
 /**
  *位置設定用
  *
@@ -5,15 +7,15 @@
  * @interface Point
  */
 export interface Point {
-  x: number
-  y: number
+  x: number;
+  y: number;
 }
 /**
  * サイズ設定用
  */
 export interface Size {
-  width: number
-  height: number
+  width: number;
+  height: number;
 }
 /**
  * ドラッグドロップ機能用
@@ -26,16 +28,16 @@ export interface Size {
  * @param {Size} nodeSize ノード初期サイズ
  */
 export interface MovePoint {
-  event: MouseEvent | TouchEvent
-  basePoint: Point
-  nowPoint: Point
-  nodePoint: Point
-  nodeSize: Size
-  distance?: number
-  radian?: number
+  event: MouseEvent | TouchEvent;
+  basePoint: Point;
+  nowPoint: Point;
+  nodePoint: Point;
+  nodeSize: Size;
+  distance?: number;
+  radian?: number;
 }
 export interface MEvent extends Event {
-  params?: unknown
+  params?: unknown;
 }
 /**
  * ウインドウ等総合管理クラス
@@ -44,15 +46,15 @@ export interface MEvent extends Event {
  * @class Jwf
  */
 export class Manager {
-  public static nodeX: number
-  public static nodeY: number
-  public static baseX: number
-  public static baseY: number
-  public static nodeWidth: number
-  public static nodeHeight: number
-  public static moveNode: HTMLElement | null = null
-  public static frame: string | null = null
-  public static pinchiBaseDistance?: number
+  public static nodeX: number;
+  public static nodeY: number;
+  public static baseX: number;
+  public static baseY: number;
+  public static nodeWidth: number;
+  public static nodeHeight: number;
+  public static moveNode: HTMLElement | null = null;
+  public static frame: string | null = null;
+  public static pinchiBaseDistance?: number;
 
   /**
    * マウスとタッチイベントの座標取得処理
@@ -60,17 +62,17 @@ export class Manager {
    * @returns {Point} マウスの座標
    */
   public static getPos(e: MouseEvent | TouchEvent): Point {
-    let p: Point
+    let p: Point;
     if (
       (e as TouchEvent).targetTouches &&
       (e as TouchEvent).targetTouches.length
     ) {
-      const touch = (e as TouchEvent).targetTouches[0]
-      p = { x: touch.pageX, y: touch.pageY }
+      const touch = (e as TouchEvent).targetTouches[0];
+      p = { x: touch.pageX, y: touch.pageY };
     } else {
-      p = { x: (e as MouseEvent).clientX, y: (e as MouseEvent).clientY }
+      p = { x: (e as MouseEvent).clientX, y: (e as MouseEvent).clientY };
     }
-    return p
+    return p;
   }
   /**
    * ノードに対してイベントを発生させる
@@ -86,7 +88,7 @@ export class Manager {
     ename: string,
     params?: unknown
   ): void {
-    node.dispatchEvent(Manager.createEvent(ename, params))
+    node.dispatchEvent(Manager.createEvent(ename, params));
   }
   /**
    *イベントを作成する
@@ -99,17 +101,17 @@ export class Manager {
    */
 
   private static createEvent(ename: string, params?: unknown): Event {
-    let event: CustomEvent & { params?: unknown }
+    let event: CustomEvent & { params?: unknown };
     try {
-      event = new CustomEvent(ename)
+      event = new CustomEvent(ename);
     } catch (e) {
-      event = document.createEvent('CustomEvent')
-      event.initCustomEvent(ename, false, false, null)
+      event = document.createEvent("CustomEvent");
+      event.initCustomEvent(ename, false, false, null);
     }
     if (params) {
-      event.params = params
+      event.params = params;
     }
-    return event
+    return event;
   }
   /**
    *ノードを作成する
@@ -124,40 +126,40 @@ export class Manager {
     tagName: K,
     params?: object
   ): HTMLElementTagNameMap[K] {
-    const tag: HTMLElementTagNameMap[K] = document.createElement(tagName)
+    const tag: HTMLElementTagNameMap[K] = document.createElement(tagName);
     if (params) {
       for (const index in params) {
-        const p = params[index as keyof object]
-        if (typeof p === 'object' && p) {
+        const p = params[index as keyof object];
+        if (typeof p === "object" && p) {
           for (const index2 of Object.keys(p)) {
             tag[index as keyof typeof tag][index2 as keyof object] =
-              p[index2 as keyof object]
+              p[index2 as keyof object];
           }
         } else {
-          tag[index as keyof typeof tag] = p as typeof tag[keyof typeof tag]
+          tag[index as keyof typeof tag] = p as typeof tag[keyof typeof tag];
         }
       }
     }
-    return tag
+    return tag;
   }
 }
 
 // マウスが離された場合に選択をリセット
 function mouseUp(): void {
-  Manager.moveNode = null
-  Manager.frame = null
+  Manager.moveNode = null;
+  Manager.frame = null;
 }
 // マウス移動時の処理
 function mouseMove(e: MouseEvent | TouchEvent): void {
   if (Manager.moveNode) {
-    if ('touches' in e && e.touches.length === 2) {
+    if ("touches" in e && e.touches.length === 2) {
       if (Manager.pinchiBaseDistance === undefined) {
-        Manager.pinchiBaseDistance = getDistance(e.touches)
+        Manager.pinchiBaseDistance = getDistance(e.touches);
       } else {
-        const node = Manager.moveNode // 移動中ノード
-        const p = Manager.getPos(e) // 座標の取得
-        const distance = getDistance(e.touches) - Manager.pinchiBaseDistance
-        const radian = getRadian(e.touches)
+        const node = Manager.moveNode; // 移動中ノード
+        const p = Manager.getPos(e); // 座標の取得
+        const distance = getDistance(e.touches) - Manager.pinchiBaseDistance;
+        const radian = getRadian(e.touches);
         const params: MovePoint = {
           event: e,
           nodePoint: { x: Manager.nodeX, y: Manager.nodeY },
@@ -166,44 +168,45 @@ function mouseMove(e: MouseEvent | TouchEvent): void {
           nodeSize: { width: Manager.nodeWidth, height: Manager.nodeHeight },
           distance,
           radian
-        }
-        Manager.callEvent(node, 'move', params)
+        };
+        Manager.callEvent(node, "move", params);
       }
-      e.preventDefault()
+      e.preventDefault();
       // e.stopPropagation();
     } else {
-      const node = Manager.moveNode // 移動中ノード
-      const p = Manager.getPos(e) // 座標の取得
+      const node = Manager.moveNode; // 移動中ノード
+      const p = Manager.getPos(e); // 座標の取得
       const params: MovePoint = {
         event: e,
         nodePoint: { x: Manager.nodeX, y: Manager.nodeY },
         basePoint: { x: Manager.baseX, y: Manager.baseY },
         nowPoint: { x: p.x, y: p.y },
         nodeSize: { width: Manager.nodeWidth, height: Manager.nodeHeight }
-      }
-      Manager.callEvent(node, 'move', params)
-      e.preventDefault()
+      };
+      Manager.callEvent(node, "move", params);
+      e.preventDefault();
       // e.stopPropagation();
     }
   }
   // e.preventDefault();
 }
 function getDistance(p: TouchList) {
-  const x = p[0].pageX - p[1].pageX
-  const y = p[0].pageY - p[1].pageY
-  return Math.sqrt(x * x + y * y)
+  const x = p[0].pageX - p[1].pageX;
+  const y = p[0].pageY - p[1].pageY;
+  return Math.sqrt(x * x + y * y);
 }
 function getRadian(p: TouchList) {
-  const x = p[0].pageX - p[1].pageX
-  const y = p[0].pageY - p[1].pageY
-  return Math.atan2(y, x)
+  const x = p[0].pageX - p[1].pageX;
+  const y = p[0].pageY - p[1].pageY;
+  return Math.atan2(y, x);
 }
 function onTouchStart(e: TouchEvent) {
-  Manager.pinchiBaseDistance = undefined
+  Manager.pinchiBaseDistance = undefined;
 }
-
-window.addEventListener('mouseup', mouseUp, false)
-window.addEventListener('touchend', mouseUp, { passive: false })
-window.addEventListener('mousemove', mouseMove, false)
-window.addEventListener('touchmove', mouseMove, { passive: false })
-window.addEventListener('touchstart', onTouchStart, { passive: false })
+if (window) {
+  window.addEventListener("mouseup", mouseUp, false);
+  window.addEventListener("touchend", mouseUp, { passive: false });
+  window.addEventListener("mousemove", mouseMove, false);
+  window.addEventListener("touchmove", mouseMove, { passive: false });
+  window.addEventListener("touchstart", onTouchStart, { passive: false });
+}
