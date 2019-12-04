@@ -142,7 +142,8 @@ export class Manager {
     return tag;
   }
   public static init(){
-    if (window) {
+    if (window && !this.initFlag) {
+      this.initFlag = true;
       window.addEventListener("mouseup", mouseUp, false);
       window.addEventListener("touchend", mouseUp, { passive: false });
       window.addEventListener("mousemove", mouseMove, false);
