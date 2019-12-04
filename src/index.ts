@@ -55,6 +55,7 @@ export class Manager {
   public static moveNode: HTMLElement | null = null;
   public static frame: string | null = null;
   public static pinchiBaseDistance?: number;
+  private static initFlag = false;
 
   /**
    * マウスとタッチイベントの座標取得処理
@@ -142,6 +143,15 @@ export class Manager {
     }
     return tag;
   }
+  public static init(){
+    if (window) {
+      window.addEventListener("mouseup", mouseUp, false);
+      window.addEventListener("touchend", mouseUp, { passive: false });
+      window.addEventListener("mousemove", mouseMove, false);
+      window.addEventListener("touchmove", mouseMove, { passive: false });
+      window.addEventListener("touchstart", onTouchStart, { passive: false });
+    }
+  }
 }
 
 // マウスが離された場合に選択をリセット
@@ -202,11 +212,4 @@ function getRadian(p: TouchList) {
 }
 function onTouchStart(e: TouchEvent) {
   Manager.pinchiBaseDistance = undefined;
-}
-if (window) {
-  window.addEventListener("mouseup", mouseUp, false);
-  window.addEventListener("touchend", mouseUp, { passive: false });
-  window.addEventListener("mousemove", mouseMove, false);
-  window.addEventListener("touchmove", mouseMove, { passive: false });
-  window.addEventListener("touchstart", onTouchStart, { passive: false });
 }
