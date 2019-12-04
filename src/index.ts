@@ -1,5 +1,3 @@
-//SSR対策
-declare var window: Window;
 /**
  *位置設定用
  *
